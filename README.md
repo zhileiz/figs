@@ -1,6 +1,8 @@
-# FIG (Figs Intelligent Graph Studio)
+# FIGS: Figs Intelligent Graph Studio
 
-![FIG Logo](./public/fig-logo.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/zhileiz/figs/refs/heads/main/public/figs-logo.png" alt="FIG Logo">
+</p>
 
 **Build Knowledge Graphs in One Command • Ground LLMs with Graph-Powered RAG**
 
