@@ -24,6 +24,7 @@ FIG is an open-source toolkit that transforms your unstructured and structured d
 > Current focus: Table → Graph → Chat pipeline • Roadmap includes PDF/Parquet support
 
 ## Quick Start (2-Minute Setup)
+```bash
 git clone https://github.com/yourusername/fig.git
 cd fig
 docker-compose up --build
