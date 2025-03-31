@@ -1,0 +1,168 @@
+services:
+  init-volumes:
+    image: busybox
+    command: >
+      /bin/sh -c "
+      mkdir -p /volumes/neo4j/{data,logs,import,plugins} &&
+      mkdir -p /volumes/db &&
+      mkdir -p /volumes/objects &&
+      chmod -R 777 /volumes/neo4j &&
+      chmod 777 /volumes/db &&
+      chmod 777 /volumes/objects
+      "
+    volumes:
+      - ./neo4j:/volumes/neo4j
+      - ./db:/volumes/db
+      - ./objects:/volumes/objects
+
+  db-init:
+    build:
+      context: .
+      target: build
+    environment:
+      DATABASE_URL: "postgres://root:123@postgres-db:5432/example"
+    entrypoint: []
+    command: >
+      /bin/sh -c "
+      echo 'Waiting for postgres...' &&
+      while ! nc -z postgres-db 5432; do sleep 1; done &&
+      echo 'PostgreSQL is ready!' &&
+      pnpm db:push
+      "
+    networks:
+      - app-network
+    depends_on:
+      init-volumes:
+        condition: service_completed_successfully
+      postgres-db:
+        condition: service_healthy
+
+  server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgres://root:123@postgres-db:5432/example"
+      S3_ENDPOINT: "http://seaweedfs-s3:8333"
+      S3_ACCESS_KEY: "any"
+      S3_SECRET_KEY: "any"
+      NEO4J_URI: "bolt://neo4j:7687"
+      NEO4J_USER: "neo4j"
+      NEO4J_PASSWORD: "password"
+    env_file:
+      - .env.prod
+    ports:
+      - 3000:3000
+    depends_on:
+      init-volumes:
+        condition: service_completed_successfully
+      db-init:
+        condition: service_completed_successfully
+      postgres-db:
+        condition: service_healthy
+      seaweedfs-s3:
+        condition: service_started
+      neo4j:
+        condition: service_started
+    networks:
+      - app-network
+
+  postgres-db:
+    image: postgres:16.0
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_DB: example
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    depends_on:
+      init-volumes:
+        condition: service_completed_successfully
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d example"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  seaweedfs-master:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-master
+    ports:
+      - 9333:9333
+    command: "master -ip=seaweedfs-master -volumeSizeLimitMB=1024"
+    restart: always
+    networks:
+      - app-network
+
+  seaweedfs-volume:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-volume
+    ports:
+      - 8080:8080
+    command: 'volume -mserver="seaweedfs-master:9333" -port=8080 -max=100 -dataCenter=dc1 -rack=rack1'
+    volumes:
+      - ./objects:/data
+    depends_on:
+      - seaweedfs-master
+      - init-volumes
+    restart: always
+    networks:
+      - app-network
+
+  seaweedfs-s3:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-s3
+    ports:
+      - 8333:8333
+    command: 's3 -port=8333 -filer="seaweedfs-filer:8888" -ip.bind=0.0.0.0'
+    depends_on:
+      - seaweedfs-filer
+    restart: always
+    networks:
+      - app-network
+
+  seaweedfs-filer:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-filer
+    ports:
+      - 8888:8888
+    command: 'filer -master="seaweedfs-master:9333"'
+    depends_on:
+      - seaweedfs-master
+    restart: always
+    networks:
+      - app-network
+
+  neo4j:
+    image: neo4j:5.13.0
+    container_name: neo4j
+    ports:
+      - "7687:7687"  # Bolt protocol
+      - "7474:7474"  # HTTP
+      - "7473:7473"  # HTTPS
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - ./neo4j/data:/data
+      - ./neo4j/logs:/logs
+      - ./neo4j/import:/import
+      - ./neo4j/plugins:/plugins
+    depends_on:
+      init-volumes:
+        condition: service_completed_successfully
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
