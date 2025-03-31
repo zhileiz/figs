@@ -29,15 +29,7 @@ docker-compose up --build
 Access the interface at http://localhost:3000 and
 
 ### Example Usage
-1. Go to "Schema" Page, open the "Schema Assistant" and input the following prompt:
-```
-Tell me about the relationship between "Customer" and "Order"
-```
-2. Go to "Sources" Page, upload the CSV files in the example data folder.
-3. For each source, click the "Ingest" button to build the graph.
-4. Go to "Graph" Page to see the graph.
-5. Go to "Playground" Page to prompt the graph.
-6. Go to "Servers" Page to see the OpenAI compatible API.
+Please refer to the [README doc in data_gen](https://github.com/zhileiz/figs/tree/main/data_gen) for data generation and upload example.
 
 ## Core Capabilities 🛠️
 
