@@ -1,13 +1,16 @@
 # FIGS: Figs Intelligent Graph Studio
+**Build Knowledge Graphs in One Command • Ground LLMs with Graph-Powered RAG**
+**(Work in progress)** but welcome stars & contributions!
+
+[![Docker Ready](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](#)
+[![GraphRAG Pioneer](https://img.shields.io/badge/GraphRAG-Pioneer-FF6F61)](#)
+
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/zhileiz/figs/refs/heads/main/public/figs-logo.png" alt="FIG Logo">
 </p>
 
-**Build Knowledge Graphs in One Command • Ground LLMs with Graph-Powered RAG**
 
-[![Docker Ready](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://hub.docker.com/)
-[![GraphRAG Pioneer](https://img.shields.io/badge/GraphRAG-Pioneer-FF6F61)](https://arxiv.org/abs/2403.14956)
 
 FIG is an open-source toolkit that transforms your unstructured and structured data into **actionable knowledge graphs**, then serves them through a hallucination-resistant chatbot using graph-based Retrieval Augmented Generation (GraphRAG). Designed for developers who want:
 
@@ -15,12 +18,11 @@ FIG is an open-source toolkit that transforms your unstructured and structured d
 ✓ **Zero ETL graph construction** - Start with tables (CSV/Excel), soon PDFs & databases  
 ✓ **Cypher-as-a-Service** - Natural language to optimized graph queries via LLM translation
 
-> **Early Access Alert**  
+> **⚠️Early Access Alert**  
 > This is a proof-of-concept release (pre-alpha). Core features work, but expect rough edges.  
 > Current focus: Table → Graph → Chat pipeline • Roadmap includes PDF/Parquet support
 
 ## Quick Start (2-Minute Setup)
-```bash
 git clone https://github.com/yourusername/fig.git
 cd fig
 docker-compose up --build
