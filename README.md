@@ -26,7 +26,7 @@ cd fig
 docker-compose up --build
 ```
 
-Access the interface at http://localhost:3000 and
+Access the interface at http://localhost:3000. 
 
 ### Example Usage
 Please refer to the [README doc in data_gen](https://github.com/zhileiz/figs/tree/main/data_gen) for data generation and upload example.
