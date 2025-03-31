@@ -1,5 +1,7 @@
 # FIG (Figs Intelligent Graph Studio)
 
+![FIG Logo](./public/fig-logo.png)
+
 **Build Knowledge Graphs in One Command • Ground LLMs with Graph-Powered RAG**
 
 [![Docker Ready](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://hub.docker.com/)
